@@ -40,11 +40,11 @@ public class WeekCalendarTest {
 //        addEvent.addActionListener(e -> cal.addEvent(evnt));
 
 
-        JButton button = new JButton("Open Form Dialog");
+        JButton button = new JButton("Add Event");
         button.addActionListener(e -> {
             // Create the dialog
             JDialog dialog = new JDialog(frm, "Event Details", true);
-            dialog.setLayout(new GridLayout(0, 2, 10, 10)); // 2 columns, 10px horizontal and vertical gaps
+            dialog.setLayout(new GridLayout(0, 2, 20, 20)); // 2 columns, 10px horizontal and vertical gaps
 
             // Create and add form components to the dialog
             JLabel dateLabel = new JLabel("Date:");
@@ -145,7 +145,7 @@ public class WeekCalendarTest {
             dialog.add(submitButton);
 
             // Set dialog size and make it visible
-            dialog.setSize(400, 300);
+            dialog.setSize(500, 500);
             dialog.setVisible(true);
         });
 
