@@ -382,9 +382,21 @@ public abstract class Calendar extends JComponent {
         repaint();
     }
 
+    public boolean isOverlapping(CalendarEvent event){
+        for(CalendarEvent e : events){
+            if(e.getDate() == event.getDate()
+                    &&  event.getStart().isAfter(e.getStart())
+                    &&  event.getStart().isBefore(e.getEnd())){
+                return  false;
+            }
+        }
+        return true;
+    }
+
     public void addEvent(CalendarEvent event) {
-        openEventForm();
-        events.add(event);
+        if(!isOverlapping(event)){
+            events.add(event);
+        }
         repaint();
     }
 
