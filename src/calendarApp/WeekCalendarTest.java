@@ -27,9 +27,9 @@ public class WeekCalendarTest {
         for(String name : cal.names){
             userEvents.add(new User(name));
         }
-        userEvents.get(0).events.add(new CalendarEvent( LocalDate.of(2024,04,17),LocalTime.of(14,0),LocalTime.of(14,20),"Testing","Sirish", new ArrayList<>()));
-        userEvents.get(1).events.add(new CalendarEvent( LocalDate.of(2024,04,16),LocalTime.of(10,0),LocalTime.of(12,0),"Testing","Sirish", new ArrayList<>()));
-        userEvents.get(2).events.add(new CalendarEvent( LocalDate.of(2024,04,18),LocalTime.of(14,0),LocalTime.of(15,0),"Testing","Sirish", new ArrayList<>()));
+        userEvents.get(0).events.add(new CalendarEvent( LocalDate.of(2024,04,17),LocalTime.of(14,0),LocalTime.of(14,20),"Testing","Sirish", new ArrayList<>(),cal.colors[0]));
+        userEvents.get(1).events.add(new CalendarEvent( LocalDate.of(2024,04,16),LocalTime.of(10,0),LocalTime.of(12,0),"Testing","Sirish", new ArrayList<>(),cal.colors[1]));
+        userEvents.get(2).events.add(new CalendarEvent( LocalDate.of(2024,04,18),LocalTime.of(14,0),LocalTime.of(15,0),"Testing","Sirish", new ArrayList<>(),cal.colors[2]));
 
         cal.addCalendarEventClickListener(e -> System.out.println(e.getCalendarEvent()));
         cal.addCalendarEmptyClickListener(e -> {
@@ -226,10 +226,14 @@ public class WeekCalendarTest {
                 System.out.println("Description: " + description);
                 System.out.println("Participants:");
                 ArrayList<String> UserList = new ArrayList<>();
-                for (JCheckBox checkBox : participantCheckBoxes) {
-                    if (checkBox.isSelected()) {
-                        System.out.println("- " + checkBox.getText());
-                        UserList.add(checkBox.getText());
+                ArrayList<Integer> users = new ArrayList<>();
+                users.add(cal.currentUser);
+                for(int i =0;i<participantCheckBoxes.length;i++){
+                    if(i!= cal.currentUser && participantCheckBoxes[i].isSelected()){
+                        System.out.println("- " + participantCheckBoxes[i].getText());
+                        UserList.add( participantCheckBoxes[i].getText());
+                        users.add(i);
+
                     }
                 }
                 cal.addEvent(new CalendarEvent(
@@ -245,8 +249,9 @@ public class WeekCalendarTest {
                                 Integer.parseInt(endTime.split(":")[1])),
                         description,
                         cal.names[cal.currentUser],
-                        UserList
-                ));
+                        UserList,
+                        cal.colors[cal.currentUser]
+                ), users);
 
 
                 // Close the dialog after submission

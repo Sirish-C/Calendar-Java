@@ -28,6 +28,7 @@ public abstract class Calendar extends JComponent {
 
     int currentUser =0;
     String [] names = {"Sirish" , "Jaswanth" , "Irfana" };
+    Color colors [] = {new Color(173, 223, 255) ,new Color(253, 253, 150),new Color(207, 159, 255)};
     // An estimate of the width of a single character (not exact but good
     // enough)
     private static final int FONT_LETTER_PIXEL_WIDTH = 5;
@@ -390,8 +391,10 @@ public abstract class Calendar extends JComponent {
         return true;
     }
 
-    public void addEvent(CalendarEvent event) {
-        userEvents.get(currentUser).events.add(event);
+    public void addEvent(CalendarEvent event , ArrayList<Integer> userLists ) {
+        for(int user :userLists) {
+            userEvents.get(user).events.add(event);
+        }
         repaint();
     }
 
