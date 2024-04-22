@@ -1,4 +1,4 @@
-package com.davidmoodie.SwingCalendar;
+package calendarApp;
 
 import java.awt.*;
 import java.time.LocalDate;

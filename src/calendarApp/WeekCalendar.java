@@ -1,4 +1,4 @@
-package com.davidmoodie.SwingCalendar;
+package calendarApp;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class WeekCalendar extends Calendar {
 
     private Week week;
-    public WeekCalendar(ArrayList<CalendarEvent> events) {
+    public WeekCalendar(ArrayList<User> events) {
         super(events);
         week = new Week(LocalDate.now());
     }

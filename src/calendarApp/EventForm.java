@@ -1,4 +1,4 @@
-package com.davidmoodie.SwingCalendar;
+package calendarApp;
 
 import javax.swing.*;
 import java.awt.*;

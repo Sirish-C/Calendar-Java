@@ -1,4 +1,4 @@
-package com.davidmoodie.SwingCalendar;
+package calendarApp;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -26,10 +26,11 @@ public abstract class Calendar extends JComponent {
     protected static final int HEADER_HEIGHT = 30;
     protected static final int TIME_COL_WIDTH = 100;
 
+    int currentUser =0;
     // An estimate of the width of a single character (not exact but good
     // enough)
     private static final int FONT_LETTER_PIXEL_WIDTH = 7;
-    private ArrayList<CalendarEvent> events;
+    private ArrayList<User> userEvents;
     private double timeScale;
     private double dayWidth;
     private Graphics2D g2;
@@ -40,8 +41,8 @@ public abstract class Calendar extends JComponent {
         this(new ArrayList<>());
     }
 
-    Calendar(ArrayList<CalendarEvent> events) {
-        this.events = events;
+    Calendar(ArrayList<User> events) {
+        this.userEvents = events;
         setupEventListeners();
         setupTimer();
     }
@@ -74,7 +75,7 @@ public abstract class Calendar extends JComponent {
 
     private boolean checkCalendarEventClick(Point p) {
         double x0, x1, y0, y1;
-        for (CalendarEvent event : events) {
+        for (CalendarEvent event : userEvents.get(currentUser).events) {
             if (!dateInRange(event.getDate())) continue;
 
             x0 = dayToPixel(event.getDate().getDayOfWeek());
@@ -107,6 +108,7 @@ public abstract class Calendar extends JComponent {
     protected abstract LocalDate getDateFromDay(DayOfWeek day);
 
     // CalendarEventClick methods
+
 
     public void addCalendarEventClickListener(CalendarEventClickListener l) {
         listenerList.add(CalendarEventClickListener.class, l);
@@ -325,7 +327,7 @@ public abstract class Calendar extends JComponent {
         double x;
         double y0;
 
-        for (CalendarEvent event : events) {
+        for (CalendarEvent event : userEvents.get(currentUser).events) {
             if (!dateInRange(event.getDate())) continue;
 
             x = dayToPixel(event.getDate().getDayOfWeek());
@@ -383,7 +385,7 @@ public abstract class Calendar extends JComponent {
     }
 
     public boolean isOverlapping(CalendarEvent event){
-        for(CalendarEvent e : events){
+        for(CalendarEvent e : userEvents.get(currentUser).events){
             if(e.getDate() == event.getDate()
                     &&  event.getStart().isAfter(e.getStart())
                     &&  event.getStart().isBefore(e.getEnd())){
@@ -394,20 +396,23 @@ public abstract class Calendar extends JComponent {
     }
 
     public void addEvent(CalendarEvent event) {
-        if(!isOverlapping(event)){
-            events.add(event);
-        }
+        userEvents.get(currentUser).events.add(event);
         repaint();
     }
 
     public boolean removeEvent(CalendarEvent event) {
-        boolean removed = events.remove(event);
+        boolean removed = userEvents.get(currentUser).events.remove(event);
         repaint();
         return removed;
     }
 
     public void setEvents(ArrayList<CalendarEvent> events) {
-        this.events = events;
+        this.userEvents.get(currentUser).events = events;
+        repaint();
+    }
+
+    public void setCurrentUser(int userId){
+        currentUser = userId;
         repaint();
     }
 }

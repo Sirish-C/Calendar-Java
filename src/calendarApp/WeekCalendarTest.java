@@ -1,6 +1,8 @@
-import com.davidmoodie.SwingCalendar.Calendar;
-import com.davidmoodie.SwingCalendar.CalendarEvent;
-import com.davidmoodie.SwingCalendar.WeekCalendar;
+package calendarApp;
+
+import calendarApp.Calendar;
+import calendarApp.CalendarEvent;
+import calendarApp.WeekCalendar;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +18,19 @@ public class WeekCalendarTest {
     public static void main(String[] args) {
         JFrame frm = new JFrame();
 
-        ArrayList<CalendarEvent> events = new ArrayList<>();
+        ArrayList<User> userEvents = new ArrayList<>();
+        userEvents.add(new User("Sirish"));
+        userEvents.add(new User("Jaswanth"));
+        userEvents.add(new User("Irfana"));
 
-        WeekCalendar cal = new WeekCalendar(events);
+
+        userEvents.get(0).events.add(new CalendarEvent( LocalDate.of(2024,04,17),LocalTime.of(14,0),LocalTime.of(14,20),"Testing","Sirish", new ArrayList<>()));
+        userEvents.get(1).events.add(new CalendarEvent( LocalDate.of(2024,04,16),LocalTime.of(10,0),LocalTime.of(12,0),"Testing","Sirish", new ArrayList<>()));
+        userEvents.get(2).events.add(new CalendarEvent( LocalDate.of(2024,04,18),LocalTime.of(14,0),LocalTime.of(15,0),"Testing","Sirish", new ArrayList<>()));
+
+
+
+        WeekCalendar cal = new WeekCalendar(userEvents);
 
         cal.addCalendarEventClickListener(e -> System.out.println(e.getCalendarEvent()));
         cal.addCalendarEmptyClickListener(e -> {
@@ -35,16 +47,17 @@ public class WeekCalendarTest {
         JButton prevWeekBtn = new JButton("<");
         prevWeekBtn.addActionListener(e -> cal.prevWeek());
 
-//        JButton addEvent = new JButton("Add Event");
-//        CalendarEvent evnt = new CalendarEvent(LocalDate.of(2024, 04, 17), LocalTime.of(14, 0), LocalTime.of(14, 20), "Test 11/11 14:00-14:20","Sirish", new ArrayList<>(),Color.green);
-//        addEvent.addActionListener(e -> cal.addEvent(evnt));
-
 
         JButton button = new JButton("Add Event");
         button.addActionListener(e -> {
             // Create the dialog
             JDialog dialog = new JDialog(frm, "Event Details", true);
             dialog.setLayout(new GridLayout(0, 2, 20, 20)); // 2 columns, 10px horizontal and vertical gaps
+
+
+//            // Create a panel with FlowLayout to add padding
+//            JPanel contentPanel = new JPanel();
+//            contentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
 
             // Create and add form components to the dialog
             JLabel dateLabel = new JLabel("Date:");
@@ -143,12 +156,30 @@ public class WeekCalendarTest {
                 dialog.dispose();
             });
             dialog.add(submitButton);
-
+//            dialog.setContentPane(contentPanel);
             // Set dialog size and make it visible
             dialog.setSize(500, 500);
             dialog.setVisible(true);
         });
 
+        String[] users ={"sirish" , "jaswanth" , "irfana"};
+        JComboBox<String>  userComboBox = new JComboBox<>(users);
+
+        userComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUser = (String) userComboBox.getSelectedItem();
+
+                switch (selectedUser){
+                    case "sirish": cal.setCurrentUser(0);
+                           break;
+                    case "jaswanth": cal.setCurrentUser(1);
+                        break;
+                    case "irfana": cal.setCurrentUser(2);
+                        break;
+                }
+            }
+        });
 
 
         JPanel weekControls = new JPanel();
@@ -157,11 +188,16 @@ public class WeekCalendarTest {
         weekControls.add(nextWeekBtn);
         weekControls.add(button);
 
-        frm.add(weekControls, BorderLayout.NORTH);
+        JPanel userControls = new JPanel();
+        userControls.add(userComboBox);
 
+        frm.add(weekControls, BorderLayout.NORTH);
+        frm.add(userControls, BorderLayout.SOUTH);
         frm.add(cal, BorderLayout.CENTER);
         frm.setSize(1000, 900);
         frm.setVisible(true);
         frm.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
     }
 }
