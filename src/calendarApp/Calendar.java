@@ -27,6 +27,7 @@ public abstract class Calendar extends JComponent {
     protected static final int TIME_COL_WIDTH = 100;
 
     int currentUser =0;
+    String [] names = {"Sirish" , "Jaswanth" , "Irfana" , "Sony"};
     // An estimate of the width of a single character (not exact but good
     // enough)
     private static final int FONT_LETTER_PIXEL_WIDTH = 7;

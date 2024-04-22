@@ -1,9 +1,4 @@
 package calendarApp;
-
-import calendarApp.Calendar;
-import calendarApp.CalendarEvent;
-import calendarApp.WeekCalendar;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,18 +14,18 @@ public class WeekCalendarTest {
         JFrame frm = new JFrame();
 
         ArrayList<User> userEvents = new ArrayList<>();
-        userEvents.add(new User("Sirish"));
-        userEvents.add(new User("Jaswanth"));
-        userEvents.add(new User("Irfana"));
-
-
-        userEvents.get(0).events.add(new CalendarEvent( LocalDate.of(2024,04,17),LocalTime.of(14,0),LocalTime.of(14,20),"Testing","Sirish", new ArrayList<>()));
-        userEvents.get(1).events.add(new CalendarEvent( LocalDate.of(2024,04,16),LocalTime.of(10,0),LocalTime.of(12,0),"Testing","Sirish", new ArrayList<>()));
-        userEvents.get(2).events.add(new CalendarEvent( LocalDate.of(2024,04,18),LocalTime.of(14,0),LocalTime.of(15,0),"Testing","Sirish", new ArrayList<>()));
 
 
 
         WeekCalendar cal = new WeekCalendar(userEvents);
+
+
+        for(String name : cal.names){
+            userEvents.add(new User(name));
+        }
+        userEvents.get(0).events.add(new CalendarEvent( LocalDate.of(2024,04,17),LocalTime.of(14,0),LocalTime.of(14,20),"Testing","Sirish", new ArrayList<>()));
+        userEvents.get(1).events.add(new CalendarEvent( LocalDate.of(2024,04,16),LocalTime.of(10,0),LocalTime.of(12,0),"Testing","Sirish", new ArrayList<>()));
+        userEvents.get(2).events.add(new CalendarEvent( LocalDate.of(2024,04,18),LocalTime.of(14,0),LocalTime.of(15,0),"Testing","Sirish", new ArrayList<>()));
 
         cal.addCalendarEventClickListener(e -> System.out.println(e.getCalendarEvent()));
         cal.addCalendarEmptyClickListener(e -> {
@@ -54,11 +49,6 @@ public class WeekCalendarTest {
             JDialog dialog = new JDialog(frm, "Event Details", true);
             dialog.setLayout(new GridLayout(0, 2, 20, 20)); // 2 columns, 10px horizontal and vertical gaps
 
-
-//            // Create a panel with FlowLayout to add padding
-//            JPanel contentPanel = new JPanel();
-//            contentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
-
             // Create and add form components to the dialog
             JLabel dateLabel = new JLabel("Date:");
             JTextField dateField = new JTextField();
@@ -73,8 +63,8 @@ public class WeekCalendarTest {
             JLabel descriptionLabel = new JLabel("Description:");
             JTextField descriptionField = new JTextField();
 
-            JLabel hostLabel = new JLabel("Host Name:");
-            JTextField hostField = new JTextField();
+
+            JLabel hostLabel = new JLabel("Host : "+cal.names[cal.currentUser]);
 
             JLabel usersLabel = new JLabel("Users (Comma-separated):");
             JTextField usersField = new JTextField();
@@ -97,7 +87,7 @@ public class WeekCalendarTest {
             dialog.add(descriptionField);
 
             dialog.add(hostLabel);
-            dialog.add(hostField);
+//            dialog.add(hostField);
 
             dialog.add(usersLabel);
             dialog.add(usersField);
@@ -113,7 +103,6 @@ public class WeekCalendarTest {
                 String startTime = startTimeField.getText();
                 String endTime = endTimeField.getText();
                 String description = descriptionField.getText();
-                String host = hostField.getText();
                 String[] users = usersField.getText().split(","); // Split comma-separated names into an array
 
                 String colorCode = colorCodeField.getText();
@@ -123,7 +112,6 @@ public class WeekCalendarTest {
                 System.out.println("Start Time: " + startTime);
                 System.out.println("End Time: " + endTime);
                 System.out.println("Description: " + description);
-                System.out.println("Host: " + host);
                 System.out.println("Users:");
                 Color color = Color.CYAN ;
                 if (colorCode.equals("green"))
@@ -149,7 +137,7 @@ public class WeekCalendarTest {
                                 Integer.parseInt(endTime.split(":")[0]),
                                 Integer.parseInt(endTime.split(":")[1])),
                         description,
-                        host,
+                        cal.names[cal.currentUser],
                         usersList, color
                 ));
                 // Close the dialog after submission
@@ -162,22 +150,12 @@ public class WeekCalendarTest {
             dialog.setVisible(true);
         });
 
-        String[] users ={"sirish" , "jaswanth" , "irfana"};
-        JComboBox<String>  userComboBox = new JComboBox<>(users);
+        JComboBox<String>  userComboBox = new JComboBox<>(cal.names);
 
         userComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedUser = (String) userComboBox.getSelectedItem();
-
-                switch (selectedUser){
-                    case "sirish": cal.setCurrentUser(0);
-                           break;
-                    case "jaswanth": cal.setCurrentUser(1);
-                        break;
-                    case "irfana": cal.setCurrentUser(2);
-                        break;
-                }
+                cal.setCurrentUser(userComboBox.getSelectedIndex());
             }
         });
 
