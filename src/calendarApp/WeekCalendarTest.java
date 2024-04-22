@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class WeekCalendarTest {
 
@@ -17,8 +18,12 @@ public class WeekCalendarTest {
     public static void main(String[] args) {
         JFrame frm = new JFrame();
 
+
         ArrayList<User> userEvents = new ArrayList<>();
 
+        ImageIcon icon = new ImageIcon("../assets/calendar.png");
+        frm.setTitle("Calendar");
+        frm.setIconImage(icon.getImage());
 
 
         WeekCalendar cal = new WeekCalendar(userEvents);
@@ -27,11 +32,37 @@ public class WeekCalendarTest {
         for(String name : cal.names){
             userEvents.add(new User(name));
         }
-        userEvents.get(0).events.add(new CalendarEvent( LocalDate.of(2024,04,17),LocalTime.of(14,0),LocalTime.of(14,20),"Testing","Sirish", new ArrayList<>(),cal.colors[0]));
-        userEvents.get(1).events.add(new CalendarEvent( LocalDate.of(2024,04,16),LocalTime.of(10,0),LocalTime.of(12,0),"Testing","Sirish", new ArrayList<>(),cal.colors[1]));
-        userEvents.get(2).events.add(new CalendarEvent( LocalDate.of(2024,04,18),LocalTime.of(14,0),LocalTime.of(15,0),"Testing","Sirish", new ArrayList<>(),cal.colors[2]));
+        userEvents.get(0).events.add(new CalendarEvent( "Practice Coding",LocalDate.of(2024,04,23),LocalTime.of(14,0),LocalTime.of(14,20),"The quick brown fox jumps over the lazy dog. Lorem ipsum dolor sit amet, consectetur adipiscing elit. The sun sets in the west, painting the sky with vibrant colors. Etiam euismod tortor id dolor suscipit, eget placerat leo pretium. The waves crashed against the shore, creating a soothing melody","Sirish", new ArrayList<>(Arrays.asList("Sirish", "Jaswanth", "Irfana")),cal.colors[0]));
+        userEvents.get(1).events.add(new CalendarEvent( "Gaming Project", LocalDate.of(2024,04,24),LocalTime.of(10,0),LocalTime.of(12,0),"Implementing a new game project.","Jaswanth", new ArrayList<>(),cal.colors[1]));
+        userEvents.get(2).events.add(new CalendarEvent( "Database Designing", LocalDate.of(2024,04,25),LocalTime.of(14,0),LocalTime.of(15,0),"Designing database for a project.","Irfana", new ArrayList<>(),cal.colors[2]));
 
-        cal.addCalendarEventClickListener(e -> System.out.println(e.getCalendarEvent()));
+        cal.addCalendarEventClickListener(e -> {
+            System.out.println(e.getCalendarEvent());
+            // Customizing the appearance of the message panel
+
+            StringBuilder sb = new StringBuilder(e.getCalendarEvent().getText());
+
+            int i = 0;
+            int wrapLength = 55 ;
+            while (i + wrapLength < sb.length() && (i = sb.lastIndexOf(" ", i + wrapLength)) != -1) {
+                sb.replace(i, i + 1, "\n");
+            }
+
+            String eventDetails =
+                    "Event Details: "+e.getCalendarEvent().getEventTitle() +"\n" +
+                            "-------------------------------------------\n" +
+                            e.getCalendarEvent().getStart() + " - " + e.getCalendarEvent().getEnd() + "\n" +
+                            "Description: \n" + sb + "\n\n" +
+                            "Host: " + e.getCalendarEvent().getHost() + "\n";
+
+                            if(!e.getCalendarEvent().getParticipants().isEmpty()){
+                                eventDetails=eventDetails+"Participants: " + String.join(", ", e.getCalendarEvent().getParticipants());
+                            }
+
+
+            JOptionPane.showMessageDialog(null, eventDetails, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
+//_MESSAGE);
+        });
         cal.addCalendarEmptyClickListener(e -> {
             System.out.println(e.getDateTime());
             System.out.println(Calendar.roundTime(e.getDateTime().toLocalTime(), 30));
@@ -46,112 +77,6 @@ public class WeekCalendarTest {
         JButton prevWeekBtn = new JButton("<");
         prevWeekBtn.addActionListener(e -> cal.prevWeek());
 
-
-//        JButton button = new JButton("Add Event");
-//        button.addActionListener(e -> {
-//            // Create the dialog
-//            JDialog dialog = new JDialog(frm, "Event Details", true);
-//            dialog.setLayout(new GridLayout(0, 2, 10, 20)); // 2 columns, 10px horizontal and vertical gaps
-//            // Create and add form components to the dialog
-//            JLabel dateLabel = new JLabel("Date:");
-//            JTextField dateField = new JTextField();
-//            dateField.setText(LocalDate.now().toString());
-//
-//            JLabel startTimeLabel = new JLabel("Start Time (HH:MM):");
-//            JTextField startTimeField = new JTextField();
-//
-//            JLabel endTimeLabel = new JLabel("End Time (HH:MM):");
-//            JTextField endTimeField = new JTextField();
-//
-//            JLabel descriptionLabel = new JLabel("Description:");
-//            JTextField descriptionField = new JTextField();
-//
-//
-//            JLabel hostLabel = new JLabel("Host : "+cal.names[cal.currentUser]);
-//
-//            JLabel usersLabel = new JLabel("Users (Comma-separated):");
-//            JTextField usersField = new JTextField();
-//
-//            JLabel colorCodeLabel = new JLabel("Color Code ");
-//            JTextField colorCodeField = new JTextField();
-//
-//
-//            // Add components to the dialog
-//            dialog.add(dateLabel);
-//            dialog.add(dateField);
-//
-//            dialog.add(startTimeLabel);
-//            dialog.add(startTimeField);
-//
-//            dialog.add(endTimeLabel);
-//            dialog.add(endTimeField);
-//
-//            dialog.add(descriptionLabel);
-//            dialog.add(descriptionField);
-//
-//            dialog.add(hostLabel);
-////            dialog.add(hostField);
-//
-//            dialog.add(usersLabel);
-//            dialog.add(usersField);
-//
-//            dialog.add(colorCodeLabel);
-//            dialog.add(colorCodeField);
-//
-//            // Create and add submit button
-//            JButton submitButton = new JButton("Submit");
-//            submitButton.addActionListener(submitEvent -> {
-//                // Extract data from the fields
-//                String date = dateField.getText();
-//                String startTime = startTimeField.getText();
-//                String endTime = endTimeField.getText();
-//                String description = descriptionField.getText();
-//                String[] users = usersField.getText().split(","); // Split comma-separated names into an array
-//
-//                String colorCode = colorCodeField.getText();
-//
-//                // Display the extracted data (for demonstration purposes)
-//                System.out.println("Date: " + date);
-//                System.out.println("Start Time: " + startTime);
-//                System.out.println("End Time: " + endTime);
-//                System.out.println("Description: " + description);
-//                System.out.println("Users:");
-//                Color color = Color.CYAN ;
-//                if (colorCode.equals("green"))
-//                    color = Color.green;
-//
-//
-//                ArrayList<String> usersList = new ArrayList<>();
-//                for (String user : users) {
-//                    System.out.println("- " + user.trim());
-//                    usersList.add(user.trim());
-//                }
-//
-//
-//                cal.addEvent(new CalendarEvent(
-//                        LocalDate.of(
-//                                Integer.parseInt(date.split("-")[0]),
-//                                Integer.parseInt(date.split("-")[1]),
-//                                Integer.parseInt(date.split("-")[2])),
-//                        LocalTime.of(
-//                                Integer.parseInt(startTime.split(":")[0]),
-//                                Integer.parseInt(startTime.split(":")[1])),
-//                        LocalTime.of(
-//                                Integer.parseInt(endTime.split(":")[0]),
-//                                Integer.parseInt(endTime.split(":")[1])),
-//                        description,
-//                        cal.names[cal.currentUser],
-//                        usersList, color
-//                ));
-//                // Close the dialog after submission
-//                dialog.dispose();
-//            });
-//            dialog.add(submitButton);
-////            dialog.setContentPane(contentPanel);
-//            // Set dialog size and make it visible
-//            dialog.setSize(500, 500);
-//            dialog.setVisible(true);
-//        });
         JButton addButton = new JButton("Add Event");
         addButton.addActionListener(e -> {
             // Create the dialog
@@ -159,6 +84,9 @@ public class WeekCalendarTest {
             JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10)); // 2 columns, 10px horizontal and vertical gaps
 
             // Create and add form components to the panel
+            JLabel eventTitle = new JLabel("Event Title :");
+            JTextField eventTitleField = new JTextField();
+
             JLabel dateLabel = new JLabel("Date:");
             JTextField dateField = new JTextField();
             dateField.setText(LocalDate.now().toString());
@@ -192,6 +120,10 @@ public class WeekCalendarTest {
             panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             // Add components to the panel
+
+            panel.add(eventTitle);
+            panel.add(eventTitleField);
+
             panel.add(dateLabel);
             panel.add(dateField);
 
@@ -214,6 +146,7 @@ public class WeekCalendarTest {
             JButton submitButton = new JButton("Submit");
             submitButton.addActionListener(submitEvent -> {
                 // Extract data from the fields
+                String title = eventTitleField.getText();
                 String date = dateField.getText();
                 String startTime = startTimeField.getText();
                 String endTime = endTimeField.getText();
@@ -236,7 +169,7 @@ public class WeekCalendarTest {
 
                     }
                 }
-                cal.addEvent(new CalendarEvent(
+                cal.addEvent(new CalendarEvent(title,
                         LocalDate.of(
                                 Integer.parseInt(date.split("-")[0]),
                                 Integer.parseInt(date.split("-")[1]),

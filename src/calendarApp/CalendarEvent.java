@@ -13,16 +13,18 @@ public class CalendarEvent {
     private LocalTime start;
     private LocalTime end;
     private String text;
+    private String eventTitle;
     private String host;
     private ArrayList<String> participants ;
     private Color color;
 
 
-    public CalendarEvent(LocalDate date, LocalTime start, LocalTime end, String text, String host , ArrayList<String> participants ) {
-        this(date, start, end, text,host , participants ,DEFAULT_COLOR);
+    public CalendarEvent(String eventTitle,LocalDate date, LocalTime start, LocalTime end, String text, String host , ArrayList<String> participants ) {
+        this(eventTitle,date, start, end, text,host , participants ,DEFAULT_COLOR);
     }
 
-    public CalendarEvent(LocalDate date, LocalTime start, LocalTime end, String text, String host , ArrayList<String>participants , Color color) {
+    public CalendarEvent(String eventTitle , LocalDate date, LocalTime start, LocalTime end, String text, String host , ArrayList<String>participants , Color color) {
+        this.eventTitle = eventTitle;
         this.date = date;
         this.start = start;
         this.end = end;
@@ -32,6 +34,8 @@ public class CalendarEvent {
         this.color = color;
     }
 
+
+    public String getEventTitle(){return eventTitle;}
     public LocalDate getDate() {
         return date;
     }
@@ -78,7 +82,7 @@ public class CalendarEvent {
     }
 
     public String toString() {
-        return getDate() + " " + getStart() + "-" + getEnd() + ". " + getText();
+        return getDate() + " " + getStart() + "-" + getEnd() + ". " + getText() +"  hosted by :"+getHost();
     }
 
     public Color getColor() {
