@@ -9,7 +9,11 @@ import java.util.ArrayList;
 
 public class WeekCalendarTest {
 
-
+    private void addToPanel(JPanel panel, GridBagConstraints constraints, Component component, int x, int y) {
+        constraints.gridx = x;
+        constraints.gridy = y;
+        panel.add(component, constraints);
+    }
     public static void main(String[] args) {
         JFrame frm = new JFrame();
 
@@ -43,57 +47,168 @@ public class WeekCalendarTest {
         prevWeekBtn.addActionListener(e -> cal.prevWeek());
 
 
-        JButton button = new JButton("Add Event");
-        button.addActionListener(e -> {
+//        JButton button = new JButton("Add Event");
+//        button.addActionListener(e -> {
+//            // Create the dialog
+//            JDialog dialog = new JDialog(frm, "Event Details", true);
+//            dialog.setLayout(new GridLayout(0, 2, 10, 20)); // 2 columns, 10px horizontal and vertical gaps
+//            // Create and add form components to the dialog
+//            JLabel dateLabel = new JLabel("Date:");
+//            JTextField dateField = new JTextField();
+//            dateField.setText(LocalDate.now().toString());
+//
+//            JLabel startTimeLabel = new JLabel("Start Time (HH:MM):");
+//            JTextField startTimeField = new JTextField();
+//
+//            JLabel endTimeLabel = new JLabel("End Time (HH:MM):");
+//            JTextField endTimeField = new JTextField();
+//
+//            JLabel descriptionLabel = new JLabel("Description:");
+//            JTextField descriptionField = new JTextField();
+//
+//
+//            JLabel hostLabel = new JLabel("Host : "+cal.names[cal.currentUser]);
+//
+//            JLabel usersLabel = new JLabel("Users (Comma-separated):");
+//            JTextField usersField = new JTextField();
+//
+//            JLabel colorCodeLabel = new JLabel("Color Code ");
+//            JTextField colorCodeField = new JTextField();
+//
+//
+//            // Add components to the dialog
+//            dialog.add(dateLabel);
+//            dialog.add(dateField);
+//
+//            dialog.add(startTimeLabel);
+//            dialog.add(startTimeField);
+//
+//            dialog.add(endTimeLabel);
+//            dialog.add(endTimeField);
+//
+//            dialog.add(descriptionLabel);
+//            dialog.add(descriptionField);
+//
+//            dialog.add(hostLabel);
+////            dialog.add(hostField);
+//
+//            dialog.add(usersLabel);
+//            dialog.add(usersField);
+//
+//            dialog.add(colorCodeLabel);
+//            dialog.add(colorCodeField);
+//
+//            // Create and add submit button
+//            JButton submitButton = new JButton("Submit");
+//            submitButton.addActionListener(submitEvent -> {
+//                // Extract data from the fields
+//                String date = dateField.getText();
+//                String startTime = startTimeField.getText();
+//                String endTime = endTimeField.getText();
+//                String description = descriptionField.getText();
+//                String[] users = usersField.getText().split(","); // Split comma-separated names into an array
+//
+//                String colorCode = colorCodeField.getText();
+//
+//                // Display the extracted data (for demonstration purposes)
+//                System.out.println("Date: " + date);
+//                System.out.println("Start Time: " + startTime);
+//                System.out.println("End Time: " + endTime);
+//                System.out.println("Description: " + description);
+//                System.out.println("Users:");
+//                Color color = Color.CYAN ;
+//                if (colorCode.equals("green"))
+//                    color = Color.green;
+//
+//
+//                ArrayList<String> usersList = new ArrayList<>();
+//                for (String user : users) {
+//                    System.out.println("- " + user.trim());
+//                    usersList.add(user.trim());
+//                }
+//
+//
+//                cal.addEvent(new CalendarEvent(
+//                        LocalDate.of(
+//                                Integer.parseInt(date.split("-")[0]),
+//                                Integer.parseInt(date.split("-")[1]),
+//                                Integer.parseInt(date.split("-")[2])),
+//                        LocalTime.of(
+//                                Integer.parseInt(startTime.split(":")[0]),
+//                                Integer.parseInt(startTime.split(":")[1])),
+//                        LocalTime.of(
+//                                Integer.parseInt(endTime.split(":")[0]),
+//                                Integer.parseInt(endTime.split(":")[1])),
+//                        description,
+//                        cal.names[cal.currentUser],
+//                        usersList, color
+//                ));
+//                // Close the dialog after submission
+//                dialog.dispose();
+//            });
+//            dialog.add(submitButton);
+////            dialog.setContentPane(contentPanel);
+//            // Set dialog size and make it visible
+//            dialog.setSize(500, 500);
+//            dialog.setVisible(true);
+//        });
+        JButton addButton = new JButton("Add Event");
+        addButton.addActionListener(e -> {
             // Create the dialog
-            JDialog dialog = new JDialog(frm, "Event Details", true);
-            dialog.setLayout(new GridLayout(0, 2, 20, 20)); // 2 columns, 10px horizontal and vertical gaps
+            JDialog dialog = new JDialog(frm, "Add Event", true);
+            JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10)); // 2 columns, 10px horizontal and vertical gaps
 
-            // Create and add form components to the dialog
+            // Create and add form components to the panel
             JLabel dateLabel = new JLabel("Date:");
             JTextField dateField = new JTextField();
             dateField.setText(LocalDate.now().toString());
 
-            JLabel startTimeLabel = new JLabel("Start Time (HH:MM):");
+            JLabel startTimeLabel = new JLabel("Start Time:");
             JTextField startTimeField = new JTextField();
-
-            JLabel endTimeLabel = new JLabel("End Time (HH:MM):");
+            JLabel endTimeLabel = new JLabel("End Time:");
             JTextField endTimeField = new JTextField();
 
             JLabel descriptionLabel = new JLabel("Description:");
-            JTextField descriptionField = new JTextField();
+            JTextArea descriptionArea = new JTextArea();
+            descriptionArea.setRows(4);
+            descriptionArea.setLineWrap(true);
+            descriptionArea.setWrapStyleWord(true);
+            JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
 
+            JLabel hostLabel = new JLabel("Host:");
+            JLabel participantsLabel = new JLabel("Participants:");
 
-            JLabel hostLabel = new JLabel("Host : "+cal.names[cal.currentUser]);
+            // Assuming cal.names is a String array containing participant names
+            JCheckBox[] participantCheckBoxes = new JCheckBox[cal.names.length];
+            JPanel participantsPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Single column for participant checkboxes
+            for (int i = 0; i < cal.names.length; i++) {
+                if(cal.currentUser !=i) {
+                    participantCheckBoxes[i] = new JCheckBox(cal.names[i]);
+                    participantsPanel.add(participantCheckBoxes[i]);
+                }
+            }
 
-            JLabel usersLabel = new JLabel("Users (Comma-separated):");
-            JTextField usersField = new JTextField();
+            // Add padding to the panel
+            panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            JLabel colorCodeLabel = new JLabel("Color Code ");
-            JTextField colorCodeField = new JTextField();
+            // Add components to the panel
+            panel.add(dateLabel);
+            panel.add(dateField);
 
+            panel.add(startTimeLabel);
+            panel.add(startTimeField);
 
-            // Add components to the dialog
-            dialog.add(dateLabel);
-            dialog.add(dateField);
+            panel.add(endTimeLabel);
+            panel.add(endTimeField);
 
-            dialog.add(startTimeLabel);
-            dialog.add(startTimeField);
+            panel.add(descriptionLabel);
+            panel.add(descriptionScrollPane);
 
-            dialog.add(endTimeLabel);
-            dialog.add(endTimeField);
+            panel.add(hostLabel);
+            panel.add(new JLabel(cal.names[cal.currentUser])); // Placeholder for host label, as it's a static text
 
-            dialog.add(descriptionLabel);
-            dialog.add(descriptionField);
-
-            dialog.add(hostLabel);
-//            dialog.add(hostField);
-
-            dialog.add(usersLabel);
-            dialog.add(usersField);
-
-            dialog.add(colorCodeLabel);
-            dialog.add(colorCodeField);
+            panel.add(participantsLabel);
+            panel.add(participantsPanel);
 
             // Create and add submit button
             JButton submitButton = new JButton("Submit");
@@ -102,29 +217,21 @@ public class WeekCalendarTest {
                 String date = dateField.getText();
                 String startTime = startTimeField.getText();
                 String endTime = endTimeField.getText();
-                String description = descriptionField.getText();
-                String[] users = usersField.getText().split(","); // Split comma-separated names into an array
-
-                String colorCode = colorCodeField.getText();
+                String description = descriptionArea.getText();
 
                 // Display the extracted data (for demonstration purposes)
                 System.out.println("Date: " + date);
                 System.out.println("Start Time: " + startTime);
                 System.out.println("End Time: " + endTime);
                 System.out.println("Description: " + description);
-                System.out.println("Users:");
-                Color color = Color.CYAN ;
-                if (colorCode.equals("green"))
-                    color = Color.green;
-
-
-                ArrayList<String> usersList = new ArrayList<>();
-                for (String user : users) {
-                    System.out.println("- " + user.trim());
-                    usersList.add(user.trim());
+                System.out.println("Participants:");
+                ArrayList<String> UserList = new ArrayList<>();
+                for (JCheckBox checkBox : participantCheckBoxes) {
+                    if (checkBox.isSelected()) {
+                        System.out.println("- " + checkBox.getText());
+                        UserList.add(checkBox.getText());
+                    }
                 }
-
-
                 cal.addEvent(new CalendarEvent(
                         LocalDate.of(
                                 Integer.parseInt(date.split("-")[0]),
@@ -138,17 +245,22 @@ public class WeekCalendarTest {
                                 Integer.parseInt(endTime.split(":")[1])),
                         description,
                         cal.names[cal.currentUser],
-                        usersList, color
+                        UserList
                 ));
+
+
                 // Close the dialog after submission
                 dialog.dispose();
             });
-            dialog.add(submitButton);
-//            dialog.setContentPane(contentPanel);
-            // Set dialog size and make it visible
-            dialog.setSize(500, 500);
-            dialog.setVisible(true);
+            panel.add(submitButton);
+
+            // Add the panel to the dialog content pane
+            dialog.getContentPane().add(panel);
+            dialog.setSize(500, 400); // Set dialog size
+            dialog.setVisible(true); // Make the dialog visible
         });
+
+
 
         JComboBox<String>  userComboBox = new JComboBox<>(cal.names);
 
@@ -164,7 +276,7 @@ public class WeekCalendarTest {
         weekControls.add(prevWeekBtn);
         weekControls.add(goToTodayBtn);
         weekControls.add(nextWeekBtn);
-        weekControls.add(button);
+        weekControls.add(addButton);
 
         JPanel userControls = new JPanel();
         userControls.add(userComboBox);

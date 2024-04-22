@@ -27,10 +27,10 @@ public abstract class Calendar extends JComponent {
     protected static final int TIME_COL_WIDTH = 100;
 
     int currentUser =0;
-    String [] names = {"Sirish" , "Jaswanth" , "Irfana" , "Sony"};
+    String [] names = {"Sirish" , "Jaswanth" , "Irfana" };
     // An estimate of the width of a single character (not exact but good
     // enough)
-    private static final int FONT_LETTER_PIXEL_WIDTH = 7;
+    private static final int FONT_LETTER_PIXEL_WIDTH = 5;
     private ArrayList<User> userEvents;
     private double timeScale;
     private double dayWidth;
@@ -345,7 +345,7 @@ public abstract class Calendar extends JComponent {
             // Store the current font state
             Font origFont = g2.getFont();
 
-            final float fontSize = origFont.getSize() - 1.6F;
+            final float fontSize = origFont.getSize() -1.0f;
 
             // Create a new font with same properties but bold
             Font newFont = origFont.deriveFont(Font.BOLD, fontSize);
@@ -361,12 +361,6 @@ public abstract class Calendar extends JComponent {
 
             // Reset font
         }
-    }
-    private static CalendarEvent openEventForm() {
-        // Create and show the form
-        EventForm  eventForm = new EventForm();
-        eventForm.setVisible(true);
-        return eventForm.submit();
     }
     protected double getDayWidth() {
         return dayWidth;

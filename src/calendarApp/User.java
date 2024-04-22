@@ -14,7 +14,6 @@ public class User {
 
     public String getName(){return this.name;}
 
-
     public ArrayList<CalendarEvent> getEvents() {
         return this.events;
     }

@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class CalendarEventClickEvent extends AWTEvent {
 
-    private CalendarEvent calendarEvent;
+    private final CalendarEvent calendarEvent;
 
     public CalendarEventClickEvent(Object source, CalendarEvent calendarEvent) {
         super(source, 0);
