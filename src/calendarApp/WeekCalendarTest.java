@@ -10,11 +10,6 @@ import java.util.Arrays;
 
 public class WeekCalendarTest {
 
-    private void addToPanel(JPanel panel, GridBagConstraints constraints, Component component, int x, int y) {
-        constraints.gridx = x;
-        constraints.gridy = y;
-        panel.add(component, constraints);
-    }
     public static void main(String[] args) {
         JFrame frm = new JFrame();
 
