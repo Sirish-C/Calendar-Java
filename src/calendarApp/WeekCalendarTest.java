@@ -7,9 +7,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import calendarApp.Calendar;
 
 public class WeekCalendarTest {
 
+    private void addToPanel(JPanel panel, GridBagConstraints constraints, Component component, int x, int y) {
+        constraints.gridx = x;
+        constraints.gridy = y;
+        panel.add(component, constraints);
+    }
     public static void main(String[] args) {
         JFrame frm = new JFrame();
 
@@ -32,9 +38,6 @@ public class WeekCalendarTest {
         userEvents.get(2).events.add(new CalendarEvent( "Database Designing", LocalDate.of(2024,04,25),LocalTime.of(14,0),LocalTime.of(15,0),"Designing database for a project.","Irfana", new ArrayList<>(),cal.colors[2]));
 
         cal.addCalendarEventClickListener(e -> {
-            System.out.println(e.getCalendarEvent());
-            // Customizing the appearance of the message panel
-
             StringBuilder sb = new StringBuilder(e.getCalendarEvent().getText());
 
             int i = 0;
@@ -54,12 +57,39 @@ public class WeekCalendarTest {
                                 eventDetails=eventDetails+"Participants: " + String.join(", ", e.getCalendarEvent().getParticipants());
                             }
 
+            
+            JPanel eventPanel = new JPanel(new BorderLayout());
+            JTextArea eventTextArea = new JTextArea(eventDetails);
+            eventTextArea.setEditable(false);
+            eventPanel.add(eventTextArea, BorderLayout.CENTER);
+            
+            
+            System.out.println(e.getCalendarEvent().getHost());
+                // Find the index of the host in the userEvents list
+            int hostIndex = -1;
+            for (int j = 0; j < userEvents.size(); j++) {
+                if (userEvents.get(j).getName().equals(e.getCalendarEvent().getHost())) {
+                    hostIndex = j;
+                    break;
+                }
+            }
 
-            JOptionPane.showMessageDialog(null, eventDetails, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
-//_MESSAGE);
+            // Check if the current user is the host
+            if (hostIndex != -1 && hostIndex == cal.currentUser) {
+                JButton removeButton = new JButton("Remove");
+                removeButton.addActionListener(removeEvent -> {
+                    // Remove the event
+                    ArrayList<String> participants = e.getCalendarEvent().getParticipants();
+
+                    cal.removeEvent(e.getCalendarEvent(), participants);
+                    JOptionPane.getRootFrame().dispose(); // Close the dialog after removal
+                });
+                eventPanel.add(removeButton, BorderLayout.SOUTH);
+            }
+                            
+            JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
         });
         cal.addCalendarEmptyClickListener(e -> {
-            System.out.println(e.getDateTime());
             System.out.println(Calendar.roundTime(e.getDateTime().toLocalTime(), 30));
         });
 
@@ -147,39 +177,62 @@ public class WeekCalendarTest {
                 String endTime = endTimeField.getText();
                 String description = descriptionArea.getText();
 
-                // Display the extracted data (for demonstration purposes)
-                System.out.println("Date: " + date);
-                System.out.println("Start Time: " + startTime);
-                System.out.println("End Time: " + endTime);
-                System.out.println("Description: " + description);
-                System.out.println("Participants:");
-                ArrayList<String> UserList = new ArrayList<>();
-                ArrayList<Integer> users = new ArrayList<>();
-                users.add(cal.currentUser);
-                for(int i =0;i<participantCheckBoxes.length;i++){
-                    if(i!= cal.currentUser && participantCheckBoxes[i].isSelected()){
-                        System.out.println("- " + participantCheckBoxes[i].getText());
-                        UserList.add( participantCheckBoxes[i].getText());
-                        users.add(i);
-
+                // Check for overlapping events
+                boolean hasOverlap = false;
+                for (int i = 0; i < participantCheckBoxes.length; i++) {
+                    if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
+                        for (CalendarEvent event : userEvents.get(i).events) {
+                            if (event.getDate().equals(LocalDate.parse(date)) &&
+                                    ((LocalTime.parse(startTime).isAfter(event.getStart()) && LocalTime.parse(startTime).isBefore(event.getEnd())) ||
+                                            (LocalTime.parse(endTime).isAfter(event.getStart()) && LocalTime.parse(endTime).isBefore(event.getEnd())) ||
+                                            (LocalTime.parse(startTime).isBefore(event.getStart()) && LocalTime.parse(endTime).isAfter(event.getEnd())))) {
+                                hasOverlap = true;
+                                break;
+                            }
+                        }
+                        if (hasOverlap) {
+                            break;
+                        }
                     }
                 }
-                cal.addEvent(new CalendarEvent(title,
-                        LocalDate.of(
-                                Integer.parseInt(date.split("-")[0]),
-                                Integer.parseInt(date.split("-")[1]),
-                                Integer.parseInt(date.split("-")[2])),
-                        LocalTime.of(
-                                Integer.parseInt(startTime.split(":")[0]),
-                                Integer.parseInt(startTime.split(":")[1])),
-                        LocalTime.of(
-                                Integer.parseInt(endTime.split(":")[0]),
-                                Integer.parseInt(endTime.split(":")[1])),
-                        description,
-                        cal.names[cal.currentUser],
-                        UserList,
-                        cal.colors[cal.currentUser]
-                ), users);
+
+
+                // Check if the current user has an event at the specified time
+                if (!hasOverlap) {
+                    for (CalendarEvent event : userEvents.get(cal.currentUser).events) {
+                        if (event.getDate().equals(LocalDate.parse(date)) &&
+                                ((LocalTime.parse(startTime).isAfter(event.getStart()) && LocalTime.parse(startTime).isBefore(event.getEnd())) ||
+                                        (LocalTime.parse(endTime).isAfter(event.getStart()) && LocalTime.parse(endTime).isBefore(event.getEnd())) ||
+                                        (LocalTime.parse(startTime).isBefore(event.getStart()) && LocalTime.parse(endTime).isAfter(event.getEnd())))) {
+                            hasOverlap = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Add event if there are no conflicts
+                if (!hasOverlap) {
+                    ArrayList<String> UserList = new ArrayList<>();
+                    ArrayList<Integer> users = new ArrayList<>();
+                    users.add(cal.currentUser);
+                    for (int i = 0; i < participantCheckBoxes.length; i++) {
+                        if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
+                            UserList.add(cal.names[i]);
+                            users.add(i);
+                        }
+                    }
+                    cal.addEvent(new CalendarEvent(title,
+                                    LocalDate.of(Integer.parseInt(date.split("-")[0]), Integer.parseInt(date.split("-")[1]), Integer.parseInt(date.split("-")[2])),
+                                    LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1])),
+                                    LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1])),
+                                    description,
+                                    cal.names[cal.currentUser],
+                                    UserList,
+                                    cal.colors[cal.currentUser]
+                            ), users);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Conflicting event! Please choose a different time.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
 
                 // Close the dialog after submission
@@ -193,8 +246,8 @@ public class WeekCalendarTest {
             dialog.setVisible(true); // Make the dialog visible
         });
 
-
-
+        
+        
         JComboBox<String>  userComboBox = new JComboBox<>(cal.names);
 
         userComboBox.addActionListener(new ActionListener() {
