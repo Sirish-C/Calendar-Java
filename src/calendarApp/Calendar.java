@@ -14,7 +14,9 @@ import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public abstract class Calendar extends JComponent {
     protected static final LocalTime START_TIME = LocalTime.of(9, 0);
@@ -27,10 +29,15 @@ public abstract class Calendar extends JComponent {
     protected static final int TIME_COL_WIDTH = 100;
 
     int currentUser =0;
-    String [] names = {"Sirish" , "Jaswanth" , "Irfana" };
+    static String [] names = {"Sirish" , "Jaswanth" , "Irfana" };
     Color colors [] = {new Color(173, 223, 255) ,new Color(253, 253, 150),new Color(207, 159, 255)};
     // An estimate of the width of a single character (not exact but good
     // enough)
+
+    static Map<String, Integer> map = new HashMap<>();
+
+
+
     private static final int FONT_LETTER_PIXEL_WIDTH = 5;
     private ArrayList<User> userEvents;
     private double timeScale;
@@ -41,6 +48,12 @@ public abstract class Calendar extends JComponent {
 
     public Calendar() {
         this(new ArrayList<>());
+    }
+
+    static{
+        for(int i = 0;i<names.length;i++){
+            map.put(names[i], i);
+        }
     }
 
     Calendar(ArrayList<User> events) {
@@ -400,6 +413,15 @@ public abstract class Calendar extends JComponent {
 
     public boolean removeEvent(CalendarEvent event) {
         boolean removed = userEvents.get(currentUser).events.remove(event);
+        repaint();
+        return removed;
+    }
+    public boolean removeEvent(CalendarEvent event, ArrayList<String> participants) {
+
+        boolean removed = userEvents.get(currentUser).events.remove(event);
+        for(String str : participants){
+            userEvents.get(map.get(str)).events.remove(event);
+        }
         repaint();
         return removed;
     }

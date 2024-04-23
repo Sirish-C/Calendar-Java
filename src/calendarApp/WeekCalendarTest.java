@@ -7,9 +7,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import calendarApp.Calendar;
 
 public class WeekCalendarTest {
 
+    private void addToPanel(JPanel panel, GridBagConstraints constraints, Component component, int x, int y) {
+        constraints.gridx = x;
+        constraints.gridy = y;
+        panel.add(component, constraints);
+    }
     public static void main(String[] args) {
         JFrame frm = new JFrame();
 
@@ -32,9 +38,6 @@ public class WeekCalendarTest {
         userEvents.get(2).events.add(new CalendarEvent( "Database Designing", LocalDate.of(2024,04,25),LocalTime.of(14,0),LocalTime.of(15,0),"Designing database for a project.","Irfana", new ArrayList<>(),cal.colors[2]));
 
         cal.addCalendarEventClickListener(e -> {
-            System.out.println(e.getCalendarEvent());
-            // Customizing the appearance of the message panel
-
             StringBuilder sb = new StringBuilder(e.getCalendarEvent().getText());
 
             int i = 0;
@@ -54,12 +57,39 @@ public class WeekCalendarTest {
                                 eventDetails=eventDetails+"Participants: " + String.join(", ", e.getCalendarEvent().getParticipants());
                             }
 
+            
+            JPanel eventPanel = new JPanel(new BorderLayout());
+            JTextArea eventTextArea = new JTextArea(eventDetails);
+            eventTextArea.setEditable(false);
+            eventPanel.add(eventTextArea, BorderLayout.CENTER);
+            
+            
+            System.out.println(e.getCalendarEvent().getHost());
+                // Find the index of the host in the userEvents list
+            int hostIndex = -1;
+            for (int j = 0; j < userEvents.size(); j++) {
+                if (userEvents.get(j).getName().equals(e.getCalendarEvent().getHost())) {
+                    hostIndex = j;
+                    break;
+                }
+            }
 
-            JOptionPane.showMessageDialog(null, eventDetails, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
-//_MESSAGE);
+            // Check if the current user is the host
+            if (hostIndex != -1 && hostIndex == cal.currentUser) {
+                JButton removeButton = new JButton("Remove");
+                removeButton.addActionListener(removeEvent -> {
+                    // Remove the event
+                    ArrayList<String> participants = e.getCalendarEvent().getParticipants();
+
+                    cal.removeEvent(e.getCalendarEvent(), participants);
+                    JOptionPane.getRootFrame().dispose(); // Close the dialog after removal
+                });
+                eventPanel.add(removeButton, BorderLayout.SOUTH);
+            }
+                            
+            JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
         });
         cal.addCalendarEmptyClickListener(e -> {
-            System.out.println(e.getDateTime());
             System.out.println(Calendar.roundTime(e.getDateTime().toLocalTime(), 30));
         });
 
@@ -193,8 +223,8 @@ public class WeekCalendarTest {
             dialog.setVisible(true); // Make the dialog visible
         });
 
-
-
+        
+        
         JComboBox<String>  userComboBox = new JComboBox<>(cal.names);
 
         userComboBox.addActionListener(new ActionListener() {
