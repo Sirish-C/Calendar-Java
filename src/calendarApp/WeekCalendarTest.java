@@ -177,39 +177,62 @@ public class WeekCalendarTest {
                 String endTime = endTimeField.getText();
                 String description = descriptionArea.getText();
 
-                // Display the extracted data (for demonstration purposes)
-                System.out.println("Date: " + date);
-                System.out.println("Start Time: " + startTime);
-                System.out.println("End Time: " + endTime);
-                System.out.println("Description: " + description);
-                System.out.println("Participants:");
-                ArrayList<String> UserList = new ArrayList<>();
-                ArrayList<Integer> users = new ArrayList<>();
-                users.add(cal.currentUser);
-                for(int i =0;i<participantCheckBoxes.length;i++){
-                    if(i!= cal.currentUser && participantCheckBoxes[i].isSelected()){
-                        System.out.println("- " + participantCheckBoxes[i].getText());
-                        UserList.add( participantCheckBoxes[i].getText());
-                        users.add(i);
-
+                // Check for overlapping events
+                boolean hasOverlap = false;
+                for (int i = 0; i < participantCheckBoxes.length; i++) {
+                    if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
+                        for (CalendarEvent event : userEvents.get(i).events) {
+                            if (event.getDate().equals(LocalDate.parse(date)) &&
+                                    ((LocalTime.parse(startTime).isAfter(event.getStart()) && LocalTime.parse(startTime).isBefore(event.getEnd())) ||
+                                            (LocalTime.parse(endTime).isAfter(event.getStart()) && LocalTime.parse(endTime).isBefore(event.getEnd())) ||
+                                            (LocalTime.parse(startTime).isBefore(event.getStart()) && LocalTime.parse(endTime).isAfter(event.getEnd())))) {
+                                hasOverlap = true;
+                                break;
+                            }
+                        }
+                        if (hasOverlap) {
+                            break;
+                        }
                     }
                 }
-                cal.addEvent(new CalendarEvent(title,
-                        LocalDate.of(
-                                Integer.parseInt(date.split("-")[0]),
-                                Integer.parseInt(date.split("-")[1]),
-                                Integer.parseInt(date.split("-")[2])),
-                        LocalTime.of(
-                                Integer.parseInt(startTime.split(":")[0]),
-                                Integer.parseInt(startTime.split(":")[1])),
-                        LocalTime.of(
-                                Integer.parseInt(endTime.split(":")[0]),
-                                Integer.parseInt(endTime.split(":")[1])),
-                        description,
-                        cal.names[cal.currentUser],
-                        UserList,
-                        cal.colors[cal.currentUser]
-                ), users);
+
+
+                // Check if the current user has an event at the specified time
+                if (!hasOverlap) {
+                    for (CalendarEvent event : userEvents.get(cal.currentUser).events) {
+                        if (event.getDate().equals(LocalDate.parse(date)) &&
+                                ((LocalTime.parse(startTime).isAfter(event.getStart()) && LocalTime.parse(startTime).isBefore(event.getEnd())) ||
+                                        (LocalTime.parse(endTime).isAfter(event.getStart()) && LocalTime.parse(endTime).isBefore(event.getEnd())) ||
+                                        (LocalTime.parse(startTime).isBefore(event.getStart()) && LocalTime.parse(endTime).isAfter(event.getEnd())))) {
+                            hasOverlap = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Add event if there are no conflicts
+                if (!hasOverlap) {
+                    ArrayList<String> UserList = new ArrayList<>();
+                    ArrayList<Integer> users = new ArrayList<>();
+                    users.add(cal.currentUser);
+                    for (int i = 0; i < participantCheckBoxes.length; i++) {
+                        if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
+                            UserList.add(cal.names[i]);
+                            users.add(i);
+                        }
+                    }
+                    cal.addEvent(new CalendarEvent(title,
+                                    LocalDate.of(Integer.parseInt(date.split("-")[0]), Integer.parseInt(date.split("-")[1]), Integer.parseInt(date.split("-")[2])),
+                                    LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1])),
+                                    LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1])),
+                                    description,
+                                    cal.names[cal.currentUser],
+                                    UserList,
+                                    cal.colors[cal.currentUser]
+                            ), users);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Conflicting event! Please choose a different time.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
 
                 // Close the dialog after submission
