@@ -10,27 +10,27 @@ import java.util.Arrays;
 import calendarApp.Calendar;
 
 public class WeekCalendarTest {
+    public static void getCalendar(String username , WeekCalendar cal, ArrayList<User> userEvents) {
 
-    private void addToPanel(JPanel panel, GridBagConstraints constraints, Component component, int x, int y) {
-        constraints.gridx = x;
-        constraints.gridy = y;
-        panel.add(component, constraints);
-    }
-    public static void main(String[] args) {
         JFrame frm = new JFrame();
 
 
-        ArrayList<User> userEvents = new ArrayList<>();
 
         ImageIcon icon = new ImageIcon("../assets/calendar.png");
         frm.setTitle("Calendar");
         frm.setIconImage(icon.getImage());
 
 
-        WeekCalendar cal = new WeekCalendar(userEvents);
+
+        for(int i =0;i<Calendar.names.length;i++){
+            if(Calendar.names[i].equals(username)){
+                cal.setCurrentUser(i);
+                break;
+            }
+        }
 
 
-        for(String name : cal.names){
+        for(String name : Calendar.names){
             userEvents.add(new User(name));
         }
         userEvents.get(0).events.add(new CalendarEvent( "Practice Coding",LocalDate.of(2024,04,23),LocalTime.of(14,0),LocalTime.of(14,20),"The quick brown fox jumps over the lazy dog. Lorem ipsum dolor sit amet, consectetur adipiscing elit. The sun sets in the west, painting the sky with vibrant colors. Etiam euismod tortor id dolor suscipit, eget placerat leo pretium. The waves crashed against the shore, creating a soothing melody","Sirish", new ArrayList<>(Arrays.asList("Sirish", "Jaswanth", "Irfana")),cal.colors[0]));
@@ -102,6 +102,33 @@ public class WeekCalendarTest {
         JButton prevWeekBtn = new JButton("<");
         prevWeekBtn.addActionListener(e -> cal.prevWeek());
 
+        JButton addButton = getAddButton(cal, userEvents, frm);
+
+        JButton logout = new JButton("logout");
+        logout.addActionListener(e -> {
+            new LoginPage();
+            frm.setVisible(false);
+        });
+
+
+        JPanel weekControls = new JPanel();
+        weekControls.add(prevWeekBtn);
+        weekControls.add(goToTodayBtn);
+        weekControls.add(nextWeekBtn);
+        weekControls.add(addButton);
+        weekControls.add(logout);
+
+
+        frm.add(weekControls, BorderLayout.NORTH);
+        frm.add(cal, BorderLayout.CENTER);
+        frm.setSize(1000, 900);
+        frm.setVisible(true);
+        frm.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
+    }
+
+    private static JButton getAddButton(WeekCalendar cal, ArrayList<User> userEvents, JFrame frm) {
         JButton addButton = new JButton("Add Event");
         addButton.addActionListener(e -> {
             // Create the dialog
@@ -162,7 +189,7 @@ public class WeekCalendarTest {
             panel.add(descriptionScrollPane);
 
             panel.add(hostLabel);
-            panel.add(new JLabel(cal.names[cal.currentUser])); // Placeholder for host label, as it's a static text
+            panel.add(new JLabel(Calendar.names[cal.currentUser])); // Placeholder for host label, as it's a static text
 
             panel.add(participantsLabel);
             panel.add(participantsPanel);
@@ -217,7 +244,7 @@ public class WeekCalendarTest {
                     users.add(cal.currentUser);
                     for (int i = 0; i < participantCheckBoxes.length; i++) {
                         if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
-                            UserList.add(cal.names[i]);
+                            UserList.add(Calendar.names[i]);
                             users.add(i);
                         }
                     }
@@ -226,7 +253,7 @@ public class WeekCalendarTest {
                                     LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1])),
                                     LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1])),
                                     description,
-                                    cal.names[cal.currentUser],
+                                    Calendar.names[cal.currentUser],
                                     UserList,
                                     cal.colors[cal.currentUser]
                             ), users);
@@ -245,35 +272,6 @@ public class WeekCalendarTest {
             dialog.setSize(500, 400); // Set dialog size
             dialog.setVisible(true); // Make the dialog visible
         });
-
-        
-        
-        JComboBox<String>  userComboBox = new JComboBox<>(cal.names);
-
-        userComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cal.setCurrentUser(userComboBox.getSelectedIndex());
-            }
-        });
-
-
-        JPanel weekControls = new JPanel();
-        weekControls.add(prevWeekBtn);
-        weekControls.add(goToTodayBtn);
-        weekControls.add(nextWeekBtn);
-        weekControls.add(addButton);
-
-        JPanel userControls = new JPanel();
-        userControls.add(userComboBox);
-
-        frm.add(weekControls, BorderLayout.NORTH);
-        frm.add(userControls, BorderLayout.SOUTH);
-        frm.add(cal, BorderLayout.CENTER);
-        frm.setSize(1000, 900);
-        frm.setVisible(true);
-        frm.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-
+        return addButton;
     }
 }

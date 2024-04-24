@@ -1,9 +1,10 @@
-package calendarApp;// Testing ...
+package calendarApp;
 
 import java.util.ArrayList;
 
 public class User {
     public String name ;
+    public String password;
     public ArrayList<CalendarEvent> events;
 
     User(String name){
@@ -13,6 +14,11 @@ public class User {
     }
 
     public String getName(){return this.name;}
+
+    public boolean checkPassword(String password){
+        return this.password.equals(password);
+    }
+
 
     public ArrayList<CalendarEvent> getEvents() {
         return this.events;
