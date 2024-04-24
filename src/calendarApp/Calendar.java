@@ -426,6 +426,11 @@ public abstract class Calendar extends JComponent {
         return removed;
     }
 
+    public void getEventDetails(CalendarEvent event){
+        System.out.println(event);
+    }
+
+
     public void setEvents(ArrayList<CalendarEvent> events) {
         this.userEvents.get(currentUser).events = events;
         repaint();
