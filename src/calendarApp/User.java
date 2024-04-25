@@ -10,7 +10,6 @@ public class User {
 
     public User(String name) {
         this.name = name;
-        this.selected = false; // Initialize selected as false by default
         events = new ArrayList<>();
     }
 
@@ -29,13 +28,5 @@ public class User {
 
     public void addEvent(CalendarEvent event) {
         events.add(event);
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 }

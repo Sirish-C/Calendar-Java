@@ -1,6 +1,7 @@
 package calendarApp;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -166,7 +167,7 @@ public class WeekCalendarTest {
             JLabel hostLabel = new JLabel("Host:");
             JLabel participantsLabel = new JLabel("Participants:");
 
-            // Assuming cal.names is a String array containing participant names
+            // Assuming Config.names is a String array containing participant names
             JCheckBox[] participantCheckBoxes = new JCheckBox[Config.names.length];
             JPanel participantsPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Single column for participant checkboxes
             for (int i = 0; i < Config.names.length; i++) {
@@ -336,14 +337,14 @@ public class WeekCalendarTest {
             JLabel hostLabel = new JLabel("Host:");
             JLabel participantsLabel = new JLabel("Participants:");
 
-            // Assuming cal.names is a String array containing participant names
-            JCheckBox[] participantCheckBoxes = new JCheckBox[cal.names.length];
+            // Assuming Config.names is a String array containing participant names
+            JCheckBox[] participantCheckBoxes = new JCheckBox[Config.names.length];
             JPanel participantsPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Single column for participant checkboxes
-            for (int i = 0; i < cal.names.length; i++) {
+            for (int i = 0; i < Config.names.length; i++) {
                 if(cal.currentUser !=i) {
-                    participantCheckBoxes[i] = new JCheckBox(cal.names[i]);
+                    participantCheckBoxes[i] = new JCheckBox(Config.names[i]);
 
-                    if(currentParticipants.contains(cal.names[i])){
+                    if(currentParticipants.contains(Config.names[i])){
                         participantCheckBoxes[i].setSelected(true);
                     }
                     participantsPanel.add(participantCheckBoxes[i]);
@@ -370,7 +371,7 @@ public class WeekCalendarTest {
             panel.add(descriptionScrollPane);
 
             panel.add(hostLabel);
-            panel.add(new JLabel(cal.names[cal.currentUser])); // Placeholder for host label, as it's a static text
+            panel.add(new JLabel(Config.names[cal.currentUser])); // Placeholder for host label, as it's a static text
 
             panel.add(participantsLabel);
             panel.add(participantsPanel);
@@ -430,7 +431,7 @@ public class WeekCalendarTest {
                     users.add(cal.currentUser);
                     for (int i = 0; i < participantCheckBoxes.length; i++) {
                         if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
-                            UserList.add(cal.names[i]);
+                            UserList.add(Config.names[i]);
                             users.add(i);
                         }
                     }
@@ -440,9 +441,9 @@ public class WeekCalendarTest {
                                     LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1])),
                                     LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1])),
                                     description,
-                                    cal.names[cal.currentUser],
+                                    Config.names[cal.currentUser],
                                     UserList,
-                                    cal.colors[cal.currentUser]
+                                    Config.colors[cal.currentUser]
                             ), users);                    
                 } else {
                     JOptionPane.showMessageDialog(null, "Conflicting event! Please choose a different time.", "Error", JOptionPane.ERROR_MESSAGE);
