@@ -19,7 +19,7 @@ public class LoginPage extends JFrame implements ActionListener {
         this.userEvents = initializeData();
         this.cal = new WeekCalendar(userEvents);
 
-        setTitle("Login Page");
+        setTitle("Calendar Login ");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
@@ -52,20 +52,29 @@ public class LoginPage extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
+        if(username.equals(Config.admin)){
+            if (password.equals("password")) {
+                WeekCalendarTest.getCalendar(username, cal, userEvents);
 
-        for(String name : Config.names){
-            if(name.equals(username)){
-                if (password.equals("password")) {
-                    WeekCalendarTest.getCalendar(username, cal, userEvents);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else {
+            for (String name : Config.names) {
+                if (name.equals(username)) {
+                    if (password.equals("password")) {
+                        WeekCalendarTest.getCalendar(username, cal, userEvents);
 
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         }
-        // Dummy check for username and password
-
+        // Dummy check for username and passwor
     }
 
     public static ArrayList<User> initializeData(){
