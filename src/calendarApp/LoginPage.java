@@ -45,6 +45,18 @@ public class LoginPage extends JFrame implements ActionListener {
         loginButton.addActionListener(this);
         add(loginButton);
 
+
+        int screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        int screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        int frameWidth = getSize().width;
+        int frameHeight = getSize().height;
+        int x = (screenWidth - frameWidth) / 2;
+        int y = (screenHeight - frameHeight) / 2;
+
+        // Set the location of the fra  me to the center of the screen
+        setLocation(x, y);
+
+
         setVisible(true);
     }
 

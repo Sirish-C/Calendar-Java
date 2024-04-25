@@ -3,7 +3,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
@@ -12,10 +11,6 @@ import java.util.ArrayList;
 
 
 import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 
 
 
@@ -47,13 +42,21 @@ public class WeekCalendarTest {
                                 eventDetails=eventDetails+"Participants: " + String.join(", ", e.getCalendarEvent().getParticipants());
                             }
 
-
-            JPanel eventPanel = new JPanel(new BorderLayout());
+            
+            JPanel eventPanel = new JPanel();
+            eventPanel.setLayout(new GridLayout());
             JTextArea eventTextArea = new JTextArea(eventDetails);
-            eventTextArea.setEditable(false);
-            eventPanel.add(eventTextArea, BorderLayout.CENTER);
-
-
+            // eventTextArea.setBackground();
+            int topMargin = 30;
+            int leftMargin = 20;
+            int bottomMargin = 10;
+            int rightMargin = 10;
+            eventTextArea.setMargin(new Insets(topMargin, leftMargin, bottomMargin, rightMargin));
+            eventTextArea.setEditable(false);            
+            eventPanel.add(eventTextArea);
+            eventPanel.setBackground(Color.BLUE);
+            
+            
                 // Find the index of the host in the userEvents list
             int hostIndex = -1;
             for (int j = 0; j < userEvents.size(); j++) {
@@ -74,18 +77,27 @@ public class WeekCalendarTest {
                     JOptionPane.getRootFrame().dispose(); // Close the dialog after removal
                 });
 
-
+                
 
                 editButton.addActionListener(editEvent -> {
                     editEventHandler(editEvent, frm, cal, userEvents, e);
                     JOptionPane.getRootFrame().dispose();
                 });
 
+                JPanel buttonPanel = new JPanel();
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.insets = new Insets(10, 10, 10, 10); // Add some padding around the buttons
+                buttonPanel.add(removeButton, gbc);
 
-                eventPanel.add(removeButton, BorderLayout.NORTH);
-                eventPanel.add(editButton, BorderLayout.SOUTH);
+                gbc.gridy = 1; // Move to the next row
+                buttonPanel.add(editButton, gbc);
+                // buttonPanel.add(removeButton);
+                // buttonPanel.add(editButton);
+                eventPanel.add(buttonPanel);
             }
-
+                            
             JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
         });
         cal.addCalendarEmptyClickListener(e -> System.out.println(Calendar.roundTime(e.getDateTime().toLocalTime(), 30)));
@@ -112,38 +124,16 @@ public class WeekCalendarTest {
         });
 
 
-        JLabel hostname= new JLabel("Welcome, "+username);
         JPanel weekControls = new JPanel();
         weekControls.add(prevWeekBtn);
         weekControls.add(goToTodayBtn);
         weekControls.add(nextWeekBtn);
-        if(!Config.admin.equals(username))
-            weekControls.add(addButton);
-
+        weekControls.add(addButton);
         weekControls.add(export);
         weekControls.add(logout);
 
-        JComboBox<String>  userComboBox = new JComboBox<>(Config.names);
-        userComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cal.setCurrentUser(userComboBox.getSelectedIndex());
-            }
-        });
 
-        userComboBox.setVisible(Config.admin.equals(username));
-
-        JPanel userControls = new JPanel();
-        userControls.add(userComboBox);
-
-
-        JPanel Headers = new JPanel(new BorderLayout());
-        Headers.add(hostname , BorderLayout.WEST);
-        Headers.add(weekControls,BorderLayout.CENTER);
-
-        Headers.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        frm.add(Headers, BorderLayout.NORTH);
-        frm.add(userControls, BorderLayout.SOUTH);
+        frm.add(weekControls, BorderLayout.NORTH);
         frm.add(cal, BorderLayout.CENTER);
         frm.setSize(1000, 900);
         frm.setVisible(true);
@@ -309,19 +299,31 @@ public class WeekCalendarTest {
             });
             panel.add(submitButton);
 
+            dialog.setSize(400, 500);
+            
+            int screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            int screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+            int frameWidth = dialog.getSize().width;
+            int frameHeight = dialog.getSize().height;
+            int x = (screenWidth - frameWidth) / 2;
+            int y = (screenHeight - frameHeight) / 2;
+
+            // Set the location of the frame to the center of the screen
+            dialog.setLocation(x, y);
+
+
             // Add the panel to the dialog content pane
             dialog.getContentPane().add(panel);
-            dialog.setSize(500, 400); // Set dialog size
             dialog.setVisible(true); // Make the dialog visible
         });
         return addButton;
     }
-
+  
   static private void editEventHandler(ActionEvent editEvent, JFrame frm, Calendar cal, ArrayList<User> userEvents, CalendarEventClickEvent e){
         JDialog dialog = new JDialog(frm, "Modify Event", true);
             JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10)); // 2 columns, 10px horizontal and vertical gaps
 
-
+        
             CalendarEvent currentEvent = e.getCalendarEvent();
 
             System.out.println(currentEvent.getEventTitle());
@@ -474,7 +476,7 @@ public class WeekCalendarTest {
                                     Config.names[cal.currentUser],
                                     UserList,
                                     Config.colors[cal.currentUser]
-                            ), users);
+                            ), users);                    
                 } else {
                     JOptionPane.showMessageDialog(null, "Conflicting event! Please choose a different time.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -487,7 +489,20 @@ public class WeekCalendarTest {
 
             // Add the panel to the dialog content pane
             dialog.getContentPane().add(panel);
-            dialog.setSize(500, 400); // Set dialog size
+            dialog.setSize(500, 400);
+            
+            
+            int screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            int screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+            int frameWidth = dialog.getSize().width;
+            int frameHeight = dialog.getSize().height;
+            int x = (screenWidth - frameWidth) / 2;
+            int y = (screenHeight - frameHeight) / 2;
+
+            // Set the location of the frame to the center of the screen
+            dialog.setLocation(x, y);
+                
+            // Set dialog size
             dialog.setVisible(true); // Make the dialog visible
 
     }
