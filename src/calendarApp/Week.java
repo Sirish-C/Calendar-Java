@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Week {
 
-    private ArrayList<LocalDate> days;
+    private final ArrayList<LocalDate> days;
 
     // Gets week variables from any date (can be within week)
     public Week(LocalDate date) {

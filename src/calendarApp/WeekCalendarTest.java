@@ -1,13 +1,10 @@
 package calendarApp;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import calendarApp.Calendar;
 
 public class WeekCalendarTest {
     public static void getCalendar(String username , WeekCalendar cal, ArrayList<User> userEvents) {
@@ -19,41 +16,22 @@ public class WeekCalendarTest {
         ImageIcon icon = new ImageIcon("../assets/calendar.png");
         frm.setTitle("Calendar");
         frm.setIconImage(icon.getImage());
+        frm.setVisible(false);
 
 
 
-        for(int i =0;i<Calendar.names.length;i++){
-            if(Calendar.names[i].equals(username)){
+        for(int i =0;i<Config.names.length;i++){
+            if(Config.names[i].equals(username)){
                 cal.setCurrentUser(i);
                 break;
             }
         }
 
 
-        for(String name : Calendar.names){
-            userEvents.add(new User(name));
-        }
-        userEvents.get(0).events.add(new CalendarEvent( "Practice Coding",LocalDate.of(2024,04,23),LocalTime.of(14,0),LocalTime.of(14,20),"The quick brown fox jumps over the lazy dog. Lorem ipsum dolor sit amet, consectetur adipiscing elit. The sun sets in the west, painting the sky with vibrant colors. Etiam euismod tortor id dolor suscipit, eget placerat leo pretium. The waves crashed against the shore, creating a soothing melody","Sirish", new ArrayList<>(Arrays.asList("Sirish", "Jaswanth", "Irfana")),cal.colors[0]));
-        userEvents.get(1).events.add(new CalendarEvent( "Gaming Project", LocalDate.of(2024,04,24),LocalTime.of(10,0),LocalTime.of(12,0),"Implementing a new game project.","Jaswanth", new ArrayList<>(),cal.colors[1]));
-        userEvents.get(2).events.add(new CalendarEvent( "Database Designing", LocalDate.of(2024,04,25),LocalTime.of(14,0),LocalTime.of(15,0),"Designing database for a project.","Irfana", new ArrayList<>(),cal.colors[2]));
-
         cal.addCalendarEventClickListener(e -> {
-            StringBuilder sb = new StringBuilder(e.getCalendarEvent().getText());
+            String eventDetails = getEventDetails(e);
 
-            int i = 0;
-            int wrapLength = 55 ;
-            while (i + wrapLength < sb.length() && (i = sb.lastIndexOf(" ", i + wrapLength)) != -1) {
-                sb.replace(i, i + 1, "\n");
-            }
-
-            String eventDetails =
-                    "Event Details: "+e.getCalendarEvent().getEventTitle() +"\n" +
-                            "-------------------------------------------\n" +
-                            e.getCalendarEvent().getStart() + " - " + e.getCalendarEvent().getEnd() + "\n" +
-                            "Description: \n" + sb + "\n\n" +
-                            "Host: " + e.getCalendarEvent().getHost() + "\n";
-
-                            if(!e.getCalendarEvent().getParticipants().isEmpty()){
+            if(!e.getCalendarEvent().getParticipants().isEmpty()){
                                 eventDetails=eventDetails+"Participants: " + String.join(", ", e.getCalendarEvent().getParticipants());
                             }
 
@@ -80,7 +58,6 @@ public class WeekCalendarTest {
                 removeButton.addActionListener(removeEvent -> {
                     // Remove the event
                     ArrayList<String> participants = e.getCalendarEvent().getParticipants();
-
                     cal.removeEvent(e.getCalendarEvent(), participants);
                     JOptionPane.getRootFrame().dispose(); // Close the dialog after removal
                 });
@@ -89,9 +66,7 @@ public class WeekCalendarTest {
                             
             JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
         });
-        cal.addCalendarEmptyClickListener(e -> {
-            System.out.println(Calendar.roundTime(e.getDateTime().toLocalTime(), 30));
-        });
+        cal.addCalendarEmptyClickListener(e -> System.out.println(Calendar.roundTime(e.getDateTime().toLocalTime(), 30)));
 
         JButton goToTodayBtn = new JButton("Today");
         goToTodayBtn.addActionListener(e -> cal.goToToday());
@@ -125,6 +100,21 @@ public class WeekCalendarTest {
         frm.setVisible(true);
         frm.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+    }
+
+    private static String getEventDetails(CalendarEventClickEvent e) {
+        StringBuilder sb = new StringBuilder(e.getCalendarEvent().getText());
+
+        int i = 0;
+        int wrapLength = 55 ;
+        while (i + wrapLength < sb.length() && (i = sb.lastIndexOf(" ", i + wrapLength)) != -1) {
+            sb.replace(i, i + 1, "\n");
+        }
+                return "Event Details: "+ e.getCalendarEvent().getEventTitle() +"\n" +
+                        "-------------------------------------------\n" +
+                        e.getCalendarEvent().getStart() + " - " + e.getCalendarEvent().getEnd() + "\n" +
+                        "Description: \n" + sb + "\n\n" +
+                        "Host: " + e.getCalendarEvent().getHost() + "\n";
 
     }
 
@@ -159,11 +149,11 @@ public class WeekCalendarTest {
             JLabel participantsLabel = new JLabel("Participants:");
 
             // Assuming cal.names is a String array containing participant names
-            JCheckBox[] participantCheckBoxes = new JCheckBox[cal.names.length];
+            JCheckBox[] participantCheckBoxes = new JCheckBox[Config.names.length];
             JPanel participantsPanel = new JPanel(new GridLayout(0, 1, 5, 5)); // Single column for participant checkboxes
-            for (int i = 0; i < cal.names.length; i++) {
+            for (int i = 0; i < Config.names.length; i++) {
                 if(cal.currentUser !=i) {
-                    participantCheckBoxes[i] = new JCheckBox(cal.names[i]);
+                    participantCheckBoxes[i] = new JCheckBox(Config.names[i]);
                     participantsPanel.add(participantCheckBoxes[i]);
                 }
             }
@@ -189,7 +179,7 @@ public class WeekCalendarTest {
             panel.add(descriptionScrollPane);
 
             panel.add(hostLabel);
-            panel.add(new JLabel(Calendar.names[cal.currentUser])); // Placeholder for host label, as it's a static text
+            panel.add(new JLabel(Config.names[cal.currentUser])); // Placeholder for host label, as it's a static text
 
             panel.add(participantsLabel);
             panel.add(participantsPanel);
@@ -244,19 +234,22 @@ public class WeekCalendarTest {
                     users.add(cal.currentUser);
                     for (int i = 0; i < participantCheckBoxes.length; i++) {
                         if (participantCheckBoxes[i] != null && participantCheckBoxes[i].isSelected()) {
-                            UserList.add(Calendar.names[i]);
+                            UserList.add(Config.names[i]);
                             users.add(i);
                         }
                     }
-                    cal.addEvent(new CalendarEvent(title,
-                                    LocalDate.of(Integer.parseInt(date.split("-")[0]), Integer.parseInt(date.split("-")[1]), Integer.parseInt(date.split("-")[2])),
-                                    LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1])),
-                                    LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1])),
-                                    description,
-                                    Calendar.names[cal.currentUser],
-                                    UserList,
-                                    cal.colors[cal.currentUser]
-                            ), users);
+                    CalendarEvent newEvent = new CalendarEvent(title,
+                            LocalDate.of(Integer.parseInt(date.split("-")[0]), Integer.parseInt(date.split("-")[1]), Integer.parseInt(date.split("-")[2])),
+                            LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1])),
+                            LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1])),
+                            description,
+                            Config.names[cal.currentUser],
+                            UserList,
+                            Config.colors[cal.currentUser]
+                    );
+                    cal.addEvent(newEvent, users);
+
+
                 } else {
                     JOptionPane.showMessageDialog(null, "Conflicting event! Please choose a different time.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
