@@ -1,9 +1,12 @@
 package calendarApp;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CalendarEvent {
 
@@ -83,6 +86,31 @@ public class CalendarEvent {
 
     public String toString() {
         return getDate() + " " + getStart() + "-" + getEnd() + ". " + getText() +"  hosted by :"+getHost();
+    }
+
+    public ArrayList<String> getDataRecord(CalendarEvent event , int userid){
+        ArrayList<String> data = new ArrayList<>();
+        String hashcodeStr = Integer.toString(event.hashCode());
+        String id = Integer.toString(userid);
+        String date  = event.getDate().format( DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String startTime = event.getStart().format(DateTimeFormatter.ofPattern("HH:mm"));
+        String endTime = event.getEnd().format(DateTimeFormatter.ofPattern("HH:mm"));
+        String title = event.getEventTitle();
+        String text = event.getText();
+        String hostID = Integer.toString( Arrays.asList(Config.names).indexOf(event.getHost()));
+        String participants = String.join(":", event.getParticipants());
+
+        data.add(hashcodeStr);
+        data.add(id);
+        data.add(date);
+        data.add(startTime);
+        data.add(endTime);
+        data.add(title);
+        data.add(text);
+        data.add(hostID);
+        data.add(participants);
+
+        return data;
     }
 
     public Color getColor() {

@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,17 +28,12 @@ public abstract class Calendar extends JComponent {
 
     protected static final int HEADER_HEIGHT = 30;
     protected static final int TIME_COL_WIDTH = 100;
-
     int currentUser =0;
-    static String [] names = {"Sirish" , "Jaswanth" , "Irfana" };
-    Color colors [] = {new Color(173, 223, 255) ,new Color(253, 253, 150),new Color(207, 159, 255)};
+
     // An estimate of the width of a single character (not exact but good
     // enough)
 
     static Map<String, Integer> map = new HashMap<>();
-
-
-
     private static final int FONT_LETTER_PIXEL_WIDTH = 5;
     private ArrayList<User> userEvents;
     private double timeScale;
@@ -51,8 +47,8 @@ public abstract class Calendar extends JComponent {
     }
 
     static{
-        for(int i = 0;i<names.length;i++){
-            map.put(names[i], i);
+        for(int i = 0;i<Config.names.length;i++){
+            map.put(Config.names[i], i);
         }
     }
 
@@ -404,9 +400,61 @@ public abstract class Calendar extends JComponent {
         return true;
     }
 
+    public static void addToDatabase(CalendarEvent event , int userid){
+        String filePath = "./datafiles/data.csv";
+        try {
+            // Open the CSV file for appending using FileWriter
+            FileWriter fileWriter = new FileWriter(filePath, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            String record = String.join(",", event.getDataRecord(event,userid));
+            bufferedWriter.write(record);
+            bufferedWriter.newLine(); // Add a new line after appending the row
+
+            // Close the BufferedWriter
+            bufferedWriter.close();
+
+            System.out.println("Row added successfully to the CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error adding row to the CSV file: " + e.getMessage());
+        }
+
+    }
+
+    public static void removeFromDatabase(String hashcode){
+        try {
+            // Read the CSV file into a list of strings
+            System.out.println("Hashcode : "+hashcode);
+            String filePath = "./datafiles/data.csv";
+            ArrayList<String> lines = new ArrayList<>();
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line.split(",")[0]+"=== "+hashcode);
+                if(!line.split(",")[0].equals(hashcode))
+                    lines.add(line);
+            }
+            reader.close();
+
+            // Write the modified list back to the CSV file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            for (String updatedLine : lines) {
+                writer.write(updatedLine);
+                writer.newLine(); // Add a new line after each line
+            }
+            writer.close();
+
+            System.out.println("Row removed successfully from the CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error removing row from the CSV file: " + e.getMessage());
+        }
+    }
+
+
     public void addEvent(CalendarEvent event , ArrayList<Integer> userLists ) {
         for(int user :userLists) {
             userEvents.get(user).events.add(event);
+            addToDatabase(event , user);
         }
         repaint();
     }
@@ -421,6 +469,7 @@ public abstract class Calendar extends JComponent {
         boolean removed = userEvents.get(currentUser).events.remove(event);
         for(String str : participants){
             userEvents.get(map.get(str)).events.remove(event);
+            removeFromDatabase(Integer.toString(event.hashCode()));
         }
         repaint();
         return removed;

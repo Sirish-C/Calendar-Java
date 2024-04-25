@@ -3,8 +3,9 @@ package calendarApp;
 import java.util.ArrayList;
 
 public class User {
-    private String name;
-    private boolean selected; // Add a boolean field to store the selection state
+    public String name ;
+    public String password;
+  
     public ArrayList<CalendarEvent> events;
 
     public User(String name) {
@@ -16,6 +17,11 @@ public class User {
     public String getName() {
         return name;
     }
+
+    public boolean checkPassword(String password){
+        return this.password.equals(password);
+    }
+
 
     public ArrayList<CalendarEvent> getEvents() {
         return events;
