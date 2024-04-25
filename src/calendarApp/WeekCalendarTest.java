@@ -45,7 +45,7 @@ public class WeekCalendarTest {
                             }
 
             
-            JPanel eventPanel = new JPanel(new BorderLayout());
+            JPanel eventPanel = new JPanel(new FlowLayout());
             JTextArea eventTextArea = new JTextArea(eventDetails);
             eventTextArea.setEditable(false);
             eventPanel.add(eventTextArea, BorderLayout.CENTER);
@@ -79,8 +79,8 @@ public class WeekCalendarTest {
                 });
 
 
-                eventPanel.add(removeButton, BorderLayout.NORTH);
-                eventPanel.add(editButton, BorderLayout.SOUTH);
+                eventPanel.add(removeButton);
+                eventPanel.add(editButton);
             }
                             
             JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
@@ -279,9 +279,21 @@ public class WeekCalendarTest {
             });
             panel.add(submitButton);
 
+            dialog.setSize(400, 500);
+            
+            int screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            int screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+            int frameWidth = dialog.getSize().width;
+            int frameHeight = dialog.getSize().height;
+            int x = (screenWidth - frameWidth) / 2;
+            int y = (screenHeight - frameHeight) / 2;
+
+            // Set the location of the frame to the center of the screen
+            dialog.setLocation(x, y);
+
+
             // Add the panel to the dialog content pane
             dialog.getContentPane().add(panel);
-            dialog.setSize(500, 400); // Set dialog size
             dialog.setVisible(true); // Make the dialog visible
         });
         return addButton;
@@ -457,7 +469,20 @@ public class WeekCalendarTest {
 
             // Add the panel to the dialog content pane
             dialog.getContentPane().add(panel);
-            dialog.setSize(500, 400); // Set dialog size
+            dialog.setSize(500, 400);
+            
+            
+            int screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            int screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+            int frameWidth = dialog.getSize().width;
+            int frameHeight = dialog.getSize().height;
+            int x = (screenWidth - frameWidth) / 2;
+            int y = (screenHeight - frameHeight) / 2;
+
+            // Set the location of the frame to the center of the screen
+            dialog.setLocation(x, y);
+                
+            // Set dialog size
             dialog.setVisible(true); // Make the dialog visible
 
     }
