@@ -11,10 +11,6 @@ import java.util.ArrayList;
 
 
 import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 
 
 
@@ -47,10 +43,18 @@ public class WeekCalendarTest {
                             }
 
             
-            JPanel eventPanel = new JPanel(new FlowLayout());
+            JPanel eventPanel = new JPanel();
+            eventPanel.setLayout(new GridLayout());
             JTextArea eventTextArea = new JTextArea(eventDetails);
-            eventTextArea.setEditable(false);
-            eventPanel.add(eventTextArea, BorderLayout.CENTER);
+            // eventTextArea.setBackground();
+            int topMargin = 30;
+            int leftMargin = 20;
+            int bottomMargin = 10;
+            int rightMargin = 10;
+            eventTextArea.setMargin(new Insets(topMargin, leftMargin, bottomMargin, rightMargin));
+            eventTextArea.setEditable(false);            
+            eventPanel.add(eventTextArea);
+            eventPanel.setBackground(Color.BLUE);
             
             
                 // Find the index of the host in the userEvents list
@@ -80,9 +84,18 @@ public class WeekCalendarTest {
                     JOptionPane.getRootFrame().dispose();
                 });
 
+                JPanel buttonPanel = new JPanel();
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.insets = new Insets(10, 10, 10, 10); // Add some padding around the buttons
+                buttonPanel.add(removeButton, gbc);
 
-                eventPanel.add(removeButton);
-                eventPanel.add(editButton);
+                gbc.gridy = 1; // Move to the next row
+                buttonPanel.add(editButton, gbc);
+                // buttonPanel.add(removeButton);
+                // buttonPanel.add(editButton);
+                eventPanel.add(buttonPanel);
             }
                             
             JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
