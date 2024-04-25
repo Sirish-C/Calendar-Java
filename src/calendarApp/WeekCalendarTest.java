@@ -23,8 +23,6 @@ public class WeekCalendarTest {
     public static void getCalendar(String username , WeekCalendar cal, ArrayList<User> userEvents) {
         JFrame frm = new JFrame();
 
-
-
         ImageIcon icon = new ImageIcon("../assets/calendar.png");
         frm.setTitle("Calendar");
         frm.setIconImage(icon.getImage());
