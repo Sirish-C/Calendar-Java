@@ -54,7 +54,7 @@ public class WeekCalendarTest {
             eventTextArea.setMargin(new Insets(topMargin, leftMargin, bottomMargin, rightMargin));
             eventTextArea.setEditable(false);            
             eventPanel.add(eventTextArea);
-            eventPanel.setBackground(Color.BLUE);
+            // eventPanel
             
             
                 // Find the index of the host in the userEvents list
