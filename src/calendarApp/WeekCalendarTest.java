@@ -47,9 +47,12 @@ public class WeekCalendarTest {
 
 
             JPanel eventPanel = new JPanel(new BorderLayout());
+
+            JPanel modificationPanel = new JPanel(new BorderLayout());
             JTextArea eventTextArea = new JTextArea(eventDetails);
             eventTextArea.setEditable(false);
             eventPanel.add(eventTextArea, BorderLayout.CENTER);
+
 
 
                 // Find the index of the host in the userEvents list
@@ -79,9 +82,9 @@ public class WeekCalendarTest {
                     JOptionPane.getRootFrame().dispose();
                 });
 
-
-                eventPanel.add(removeButton, BorderLayout.NORTH);
-                eventPanel.add(editButton, BorderLayout.SOUTH);
+                modificationPanel.add(removeButton,BorderLayout.WEST);
+                modificationPanel.add(editButton,BorderLayout.EAST);
+                eventPanel.add(modificationPanel, BorderLayout.SOUTH);
             }
 
             JOptionPane.showMessageDialog(null, eventPanel, e.getCalendarEvent().getEventTitle(), JOptionPane.INFORMATION_MESSAGE);
