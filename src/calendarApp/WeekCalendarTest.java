@@ -1,7 +1,9 @@
 package calendarApp;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -96,7 +98,11 @@ public class WeekCalendarTest {
         JButton prevWeekBtn = new JButton("<");
         prevWeekBtn.addActionListener(e -> cal.prevWeek());
 
+        JButton export = new JButton("export");
+        export.addActionListener(e -> captureScreen(frm , cal, Config.names[cal.currentUser]));
+
         JButton addButton = getAddButton(cal, userEvents, frm);
+
 
         JButton logout = new JButton("logout");
         logout.addActionListener(e -> {
@@ -110,6 +116,7 @@ public class WeekCalendarTest {
         weekControls.add(goToTodayBtn);
         weekControls.add(nextWeekBtn);
         weekControls.add(addButton);
+        weekControls.add(export);
         weekControls.add(logout);
 
 
@@ -485,5 +492,25 @@ public class WeekCalendarTest {
             // Set dialog size
             dialog.setVisible(true); // Make the dialog visible
 
+    }
+    static void captureScreen(JFrame frm , Component component, String hostname) {
+        try {
+            // Create a BufferedImage to hold the screenshot of the panel
+            BufferedImage screenshot = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+            // Get the graphics context of the panel and draw the panel onto the BufferedImage
+            Graphics2D graphics2D = screenshot.createGraphics();
+            component.paint(graphics2D);
+
+            // Save the screenshot to a file (you can change the file path as needed)
+            File outputfile = new File("./ExportSchedules/Schedule-"+hostname+".png");
+            ImageIO.write(screenshot, "png", outputfile);
+
+            JOptionPane.showMessageDialog(frm, "Your schedule is exported as  schedule-"+hostname+".png");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(frm, "Error capturing screenshot: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
